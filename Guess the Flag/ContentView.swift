@@ -12,8 +12,58 @@ struct ContentView: View {
 // Exemplos de uso do conhecimento aprendido na liçao 2
 //    @State private var showingAlert = false
     
+    @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
+    @State private var correctAnswer = Int.random(in: 0...2)
+    @State private var showingScore = false
+    @State private var scoreTitle = ""
+    @State private var score = 0
+
+    let correctPoints = 25 //added to the score when the user is correct
+    let wrongPoints = 10 //subtracted from the score when the user is wrong
+    @State var additionalMessage = ""
+    
     var body: some View {
-        Text("Hello World")
+        ZStack{
+            LinearGradient(gradient: Gradient(colors: [.blue, .black]), startPoint: .top, endPoint: .bottom).edgesIgnoringSafeArea(.all)
+            VStack(spacing:30){
+                VStack{
+                    Text("Tap the flag of...").foregroundColor(.white)
+                    Text("\(countries[correctAnswer])")
+                        .foregroundColor(.white)
+                        .font(.largeTitle)
+                        .fontWeight(.black)
+                }
+                
+                ForEach(0..<3){ number in
+                    Button(action: {
+                        self.flagTapped(number)
+                    }){
+                        Image(self.countries[number])
+                            .renderingMode(.original)
+                            .clipShape(Capsule())
+                            .overlay(Capsule()
+                                .stroke(Color.black, lineWidth: 1))
+                            .shadow(color: .black, radius: 2)
+                            .overlay(Capsule()
+                                .foregroundColor(self.isCorrect(number) ? .green : .red)
+                                .opacity(self.showingScore ? 0.7 : 0))
+                    }
+                }
+                Spacer()
+                    .frame(maxHeight: 50)
+                VStack {
+                    Text("Total Score:").font(.title).fontWeight(.semibold).foregroundColor(.white)
+                    Text("\(score)").font(.largeTitle).fontWeight(.black).foregroundColor(.yellow)
+                }
+                .padding(.bottom, 150)
+
+            }
+            .padding(.top, 40.0)
+        }.alert(isPresented: $showingScore) {
+            Alert(title: Text(scoreTitle), message: Text(additionalMessage), dismissButton: .default(Text("Continue")) {
+                    self.askQuestion()
+                })
+        }
         //Exemplos de uso do conhecimento aprendido na liçao 2
 //        ZStack{
 ////            Color(red:1, green:0.5, blue:0.7).edgesIgnoringSafeArea(.all)
@@ -59,6 +109,36 @@ struct ContentView: View {
 //            }
 //        }
     }
+    
+    func flagTapped(_ number: Int) {
+        if(number == correctAnswer){
+            scoreTitle = "✅ " + "(" + "+" + String(correctPoints) + ")"
+            score = score + correctPoints
+            additionalMessage = "Nice!"
+        }
+        else {
+            scoreTitle = "❌" + "(" + "-" + String(wrongPoints) + ")"
+            score = score - wrongPoints
+            additionalMessage = "That's the flag of \(countries[number])!"
+        }
+        
+        showingScore = true
+    }
+    
+    func isCorrect(_ number: Int) -> Bool {
+        if (number == correctAnswer) {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    
+    func askQuestion() {
+        countries.shuffle()
+        correctAnswer = Int.random(in: 0...2)
+    }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
