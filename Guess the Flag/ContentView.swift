@@ -49,6 +49,19 @@ extension View {
     }
 }
 
+struct FlagImage: View {
+    var countryName: String
+    
+    var body: some View {
+        Image(countryName)
+        .renderingMode(.original)
+        .clipShape(Capsule())
+        .overlay(Capsule()
+            .stroke(Color.black, lineWidth: 1))
+        .shadow(color: .black, radius: 2)
+    }
+}
+
 struct ContentView: View {
 // Exemplos de uso do conhecimento aprendido na liçao 2
 //    @State private var showingAlert = false
@@ -77,12 +90,7 @@ struct ContentView: View {
                     Button(action: {
                         self.flagTapped(number)
                     }){
-                        Image(self.countries[number])
-                            .renderingMode(.original)
-                            .clipShape(Capsule())
-                            .overlay(Capsule()
-                                .stroke(Color.black, lineWidth: 1))
-                            .shadow(color: .black, radius: 2)
+                        FlagImage(countryName: self.countries[number])
                             .overlay(Capsule()
                                 .foregroundColor(self.isCorrect(number) ? .green : .red)
                                 .opacity(self.showingScore ? 0.7 : 0))
