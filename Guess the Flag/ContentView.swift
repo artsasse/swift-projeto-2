@@ -8,6 +8,47 @@
 
 import SwiftUI
 
+//custom modifier 1
+struct CountryTitle: ViewModifier {
+    
+    let cFont = Font.largeTitle.weight(.black)
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(.white)
+            .font(cFont)
+    }
+}
+
+extension View {
+    func countryTitleStyle() -> some View {
+        self.modifier(CountryTitle())
+    }
+}
+
+//custom modifier 2
+struct ColoredScore: ViewModifier {
+    var score: Int
+    
+    func body(content: Content) -> some View {
+        if(score > 0){
+            return content.foregroundColor(.green)
+        }
+        else if(score < 0){
+            return content.foregroundColor(.red)
+        }
+        else{
+            return content.foregroundColor(.yellow)
+        }
+    }
+}
+
+extension View {
+    func colorMyScore(score: Int) -> some View{
+        self.modifier(ColoredScore(score: score))
+    }
+}
+
 struct ContentView: View {
 // Exemplos de uso do conhecimento aprendido na liçao 2
 //    @State private var showingAlert = false
@@ -29,9 +70,7 @@ struct ContentView: View {
                 VStack{
                     Text("Tap the flag of...").foregroundColor(.white)
                     Text("\(countries[correctAnswer])")
-                        .foregroundColor(.white)
-                        .font(.largeTitle)
-                        .fontWeight(.black)
+                        .countryTitleStyle()
                 }
                 
                 ForEach(0..<3){ number in
@@ -52,8 +91,14 @@ struct ContentView: View {
                 Spacer()
                     .frame(maxHeight: 50)
                 VStack {
-                    Text("Total Score:").font(.title).fontWeight(.semibold).foregroundColor(.white)
-                    Text("\(score)").font(.largeTitle).fontWeight(.black).foregroundColor(.yellow)
+                    Text("Total Score:")
+                        .font(.title)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                    Text("\(score)")
+                        .font(.largeTitle)
+                        .fontWeight(.black)
+                        .colorMyScore(score: score)
                 }
                 .padding(.bottom, 150)
 
@@ -137,6 +182,15 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+    }
+    
+    func isPositive(_ number: Int) -> Bool {
+        if (number > 0){
+            return true
+        }
+        else{
+            return false
+        }
     }
     
 }
